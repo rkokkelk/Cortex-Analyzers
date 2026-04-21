@@ -20,13 +20,14 @@ class IPinfoAnalyzer(Analyzer):
         namespace = "IPinfo"
 
         if self.service == "details":
-            country = raw.get("country")
+            geo = raw.get("geo", {})
+            country = geo.get("country")
             if country:
                 taxonomies.append(
                     self.build_taxonomy(level, namespace, "Country", country)
                 )
 
-            asn = raw.get("asn")
+            asn = raw.get("asn", {})
             if asn and asn.get("asn"):
                 taxonomies.append(
                     self.build_taxonomy(
@@ -43,36 +44,41 @@ class IPinfoAnalyzer(Analyzer):
                     self.build_taxonomy(
                         level, namespace, "Company", company.get("name"))
                 )
-            privacy = raw.get("privacy")
-            if privacy and privacy.get("vpn"):
+            anonymous = raw.get("anonymous")
+            if anonymous and anonymous.get("is_vpn"):
                 taxonomies.append(
                     self.build_taxonomy(
-                        level, namespace, "VPN", privacy.get("vpn"))
+                        level, 'suspicious', "VPN", anonymous.get("is_vpn"))
                 )
-            if privacy and privacy.get("tor"):
+            if anonymous and anonymous.get("is_tor"):
                 taxonomies.append(
                     self.build_taxonomy(
-                        level, namespace, "TOR", privacy.get("tor"))
+                        level, 'malicious', "TOR", anonymous.get("is_tor"))
                 )
-            if privacy and privacy.get("proxy"):
+            if anonymous and anonymous.get("is_proxy"):
                 taxonomies.append(
                     self.build_taxonomy(
-                        level, namespace, "Proxy", privacy.get("proxy"))
+                        level, 'suspicious', "Proxy", anonymous.get("is_proxy"))
                 )
-            if privacy and privacy.get("relay"):
+            if anonymous and anonymous.get("is_res_proxy"):
                 taxonomies.append(
                     self.build_taxonomy(
-                        level, namespace, "Relay", privacy.get("relay"))
+                        level, 'malicious', "Res-Proxy", anonymous.get("is_res_proxy"))
                 )
-            if privacy and privacy.get("hosting"):
+            if anonymous and anonymous.get("is_relay"):
                 taxonomies.append(
                     self.build_taxonomy(
-                        level, namespace, "Hosting", privacy.get("hosting"))
+                        level, 'suspicious', "Relay", anonymous.get("is_relay"))
                 )
-            if privacy and privacy.get("service"):
+            if raw.get("is_hosting"):
                 taxonomies.append(
                     self.build_taxonomy(
-                        level, namespace, "PrivacyService", privacy.get("service"))
+                        level, namespace, "Hosting", anonymous.get("is_hosting"))
+                )
+            if anonymous and anonymous.get("name"):
+                taxonomies.append(
+                    self.build_taxonomy(
+                        level, namespace, "PrivacyService", anonymous.get("name"))
                 )
 
         elif self.service == "hosted_domains":
