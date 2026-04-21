@@ -1,0 +1,153 @@
+<div class="report" ng-if="success">
+  <div class="panel panel-info">
+
+    <div class="panel-heading">
+      IPinfo details:
+      <strong>{{content.ip}}</strong>
+      <a ng-href="https://ipinfo.io/{{content.ip}}" target="_blank" title="View on IPinfo" style="margin-left:6px;"><i class="fa fa-external-link"></i></a>
+
+      <span class="pull-right">
+        <span ng-if="content.is_anonymous"
+              ng-class="{
+                'label label-danger': content.anonymous?.is_tor,
+                'label label-danger': content.anonymous?.is_res_proxy,
+                'label label-warning': !content.anonymous?.is_res_proxy && !content.anonymous?.is_tor
+              }">
+          <i class="fa-light fa-user-secret"></i>Anonymous
+            <span ng-if="content.anonymous.name">
+            : {{content.anonymous.name}}
+            </span>
+        </span>
+        <span class="label label-info" ng-if="content.is_mobile">
+          <i class="fa-regular fa-signal"></i>Mobile
+            <span ng-if="content.mobile.name">
+            : {{content.mobile.name}}
+            </span>
+        </span>
+        <span class="label label-info" ng-if="content.is_satellite">
+          <i class="fa-solid fa-satellite"></i>Satellite
+        </span>
+        <span class="label label-info" ng-if="content.is_hosting">
+          <i class="fa fa-server"></i>Hosting
+        </span>
+        <span class="label label-info" ng-if="content.is_anycast">
+          <i class="fa fa-draw-polygon"></i>Anycast
+        </span>
+        <span class="label label-info"
+          ng-if="content.as.name">ASN: {{content.as.name }}</span>
+        <span class="label label-default"
+          ng-if="content.geo.country">{{content.geo.country}}</span>
+      </span>
+    </div>
+
+    <!-- ASN info -->
+    <div class="panel-body">
+      <div class="panel" ng-if="content.anonymous">
+        <div class="panel-heading">
+            <i class="fa fa-cloud"></i> ASN info
+        </div>
+        <div>
+          <dl class="dl-horizontal" style="margin-bottom:0;">
+            <dt>ASN</dt>
+            <dd><a href="https://ipinfo.io/{{content.as.asn}}" target="_blank">{{ content.as.asn}}</a> - {{content.as.name}}</dd>
+            <dt>Domain</dt>
+            <dd>{{ content.as.domain || '-'}}</dd>
+            <dt>Hostname</dt>
+            <dd>{{ content.hostname || ''}}</dd>
+            <dt>Type</dt>
+            <dd>{{ content.as.type || 'Unknown'}}</dd>
+            <dt>Last Changed</dt>
+            <dd>{{ content.as.last_changed}}</dd>
+          </dl>
+        </div>
+      <div>
+    
+    <!-- Geo location-->
+    <div class="panel-body">
+      <div class="panel" ng-if="content.anonymous">
+        <div class="panel-heading">
+            <i class="fa fa-earth-africa"></i> IP Geolocation
+        </div>
+        <div>
+          <span class="pull-left">p
+						<dl class="dl-horizontal" style="margin-bottom:0;">
+              <dt>City</dt>
+              <dd>{{ content.geo.city}}</dd>
+              <dt>Region</dt>
+              <dd>{{ content.geo.region}}</dd>
+              <dt>Country</dt>
+              <dd>{{ content.geo.country}}</dd>
+              <dt>Continent</dt>
+              <dd>{{ content.geo.continent}}</dd>
+              <dt>Timezone</dt>
+              <dd>{{ content.geo.timezone}}</dd>
+              <dt>Last Changed</dt>
+              <dd>{{ content.geo.last_changed}}</dd>
+            </dl>
+          </span>
+          <span class="pull-right">
+              <iframe
+                width="600"
+                height="450"
+                frameborder="0"
+                scrolling="no"
+                marginheight="0"
+                marginwidth="0"
+                src="https://www.openstreetmap.org/export/embed.html?bbox={{content.geo.longitude}}%2C{{content.geo.latitude}}%2C{{content.geo.longitude}}%2C{{content.geo.latitude}}&layer=mapnik&marker={{content.geo.latitude}},{{content.geo.longitude}}">
+              </iframe>
+          </span>
+        </div>
+      <div>
+
+    <!-- Anonymous overview -->
+    <div class="panel-body">
+      <div class="panel" ng-if="content.anonymous">
+        <div class="panel-heading">
+            <i class="fa fa-user-secret"></i> Anonymous
+        </div>
+      <div>
+        <table class="table table-striped table-bordered table-condensed" style="table-layout: fixed;">
+          <thead>
+            <tr>
+              <th style="width: 130px;">Type</th>
+              <th style="width: 180px;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Relay</td>
+              <td><span class="label label-warning" ng-if="content.anonymous.is_relay">Detected</span></td>
+            </tr>
+            <tr>
+              <td>Residential Proxy</td>
+              <td><span class="label label-danger" ng-if="content.anonymous.is_res_proxy">Detected</span></td>
+            </tr>
+            <tr>
+              <td>Tor</td>
+              <td><span class="label label-danger" ng-if="content.anonymous.is_tor">Detected</span></td>
+            </tr>
+            <tr>
+              <td>VPN</td>
+              <td><span class="label label-warning" ng-if="content.anonymous.is_vpn">Detected</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- General error  -->
+<div class="panel panel-danger" ng-if="!success">
+  <div class="panel-heading">
+    <strong>{{ artifact.data | fang }}</strong>
+  </div>
+  <div class="panel-body">
+    <dl class="dl-horizontal" ng-if="content.errorMessage">
+      <dt>
+        <i class="fa fa-warning"></i>
+      </dt>
+      <dd class="wrap">{{ content.errorMessage }}</dd>
+    </dl>
+  </div>
+</div>
